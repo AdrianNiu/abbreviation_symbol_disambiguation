@@ -1,0 +1,4 @@
+              Fold 1     Fold 2     Fold 3     Fold 4     Fold 5    Average   
+Precision      0.77       0.77       0.77       0.76       0.80      0.77      
+Recall         0.67       0.68       0.67       0.67       0.71      0.68      
+F1 score       0.70       0.72       0.70       0.71       0.74      0.71      
