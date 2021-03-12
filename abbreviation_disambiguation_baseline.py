@@ -7,6 +7,11 @@ from collections import defaultdict, Counter
 import nltk
 from sklearn.metrics import precision_recall_fscore_support
 
+# SVM import
+import nltk.classify
+from sklearn.svm import LinearSVC
+
+
 
 """
 This script trains and evaluates a baseline feature set and model
@@ -46,6 +51,7 @@ def main(infile, outfile):
     recs = []
     f1s = []
     fold = 1
+    print("data",data, "label", labels)
     print(f"Running training and evaluation on {len(data)} examples.")
     for test_start, test_end in cross_validation_folds(5, len(data)):
         print(f"Fold: {fold}  ", end='', flush=True)
@@ -63,6 +69,18 @@ def main(infile, outfile):
         train_examples = zip(train_feats, train_labels)
         # Change this line to try different models.
         trained_classifier = nltk.NaiveBayesClassifier.train(train_examples)
+
+        # classifier = nltk.classify.SklearnClassifier(LinearSVC())
+        # classifier.train(train_features)
+
+        # for test_record in test_data_list:
+        #     features = extract_features(test_record)
+        #     predict = classifier.classify(features)
+        #     print predict
+
+
+
+
 
         end = time()
         train_time = end - start
@@ -108,6 +126,7 @@ def read_abbreviation_dataset(infile, shuffle=True, n=None):
             #        start_pos, end_pos, section, sample]
             data.append([line[0]] + line[2:])
             labels.append(line[1])
+            
     if shuffle is True:
         shuffled = random.sample(list(zip(data, labels)), k=len(data))
         data = [elem[0] for elem in shuffled]
@@ -139,6 +158,7 @@ def get_features(train_data, test_data):
             # Add new features in this loop.
             target_sf = example[0]
             sf_feature = get_short_form_feature(target_sf, short_form_vocab)
+            # print("sf feature???", sf_feature)
             document = example[5]
             bow_feature = get_bag_of_words_features(document, vocabulary)
             feat = {**sf_feature, **bow_feature}
@@ -231,8 +251,8 @@ def evaluate(predictions, gold_labels):
     """
     if len(predictions) != len(gold_labels):
         raise ValueError("Number of predictions and gold labels differ.")
-    prec, rec, f1, _ = precision_recall_fscore_support(predictions,
-                                                       gold_labels,
+    prec, rec, f1, _ = precision_recall_fscore_support(gold_labels,
+                                                       predictions,
                                                        average="macro",
                                                        zero_division=0)
     return prec, rec, f1
